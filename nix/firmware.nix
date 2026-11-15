@@ -33,6 +33,8 @@ stdenv.mkDerivation {
     cp -R ${../keyboards/crkbd/keymaps/gen740} keyboards/crkbd/keymaps/gen740
     chmod -R u+w keyboards/crkbd/keymaps/gen740
     patch -p1 < ${../patches/disable-pixel-rain.patch}
+    # Make invokes uf2conv.py directly; /usr/bin/env is absent in Nix sandboxes.
+    patchShebangs util
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME"
     export QMK_HOME="$PWD"
@@ -53,7 +55,7 @@ stdenv.mkDerivation {
   installPhase = ''
     runHook preInstall
     mkdir -p "$out"
-    cp crkbd_rev4_1_standard_gen740.{uf2,bin} "$out/"
+    cp crkbd_rev4_1_standard_gen740.uf2 "$out/"
     runHook postInstall
   '';
   dontFixup = true;

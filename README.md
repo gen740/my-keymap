@@ -32,7 +32,7 @@ Corne 以外の RP2040 も同じ ID を使うため、書き込むキーボー�
 ## ビルドと編集
 
 ```sh
-nix build          # result/*.uf2 と result/*.bin
+nix build          # result/crkbd_rev4_1_standard_gen740.uf2
 nix flake check -L # ファームウェアのビルド検証
 nix fmt           # Nix ファイルの整形
 ```
