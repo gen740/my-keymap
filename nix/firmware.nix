@@ -27,6 +27,11 @@ stdenv.mkDerivation {
     cp ${qmkSource}/requirements{,-dev}.txt .
     mkdir -p keyboards/crkbd
     cp -R ${qmkSource}/keyboards/crkbd/. keyboards/crkbd/
+    # QMK validates the community layouts advertised by the Corne definition.
+    mkdir -p layouts/default/{split_3x5_3,split_3x6_3}
+    for layout in split_3x5_3 split_3x6_3; do
+      cp ${qmkSource}/layouts/default/"$layout"/*.json layouts/default/"$layout"/
+    done
     chmod -R u+w .
     rm -rf keyboards/crkbd/keymaps
     mkdir -p keyboards/crkbd/keymaps
