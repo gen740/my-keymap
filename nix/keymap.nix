@@ -27,6 +27,11 @@
         cp -R ${../tools} tools
         cp -R ${../tests} tests
         python3 tests/test_flash.py -v
+        # Exercise the actual app and built UF2 without touching USB hardware.
+        mkdir RPI-RP2
+        echo 'Board-ID: RPI-RP2' > RPI-RP2/INFO_UF2.TXT
+        ${config.packages.flash}/bin/flash --mount "$PWD/RPI-RP2"
+        cmp RPI-RP2/NEW.UF2 ${config.packages.firmware}/crkbd_rev4_1_standard_gen740.uf2
         touch "$out"
       '';
       devShells.default = pkgs.mkShell {
