@@ -1,60 +1,61 @@
 # my-keymap
 
-`gen740/qmk_firmware` から切り出した Corne 用 keymap です。
-対象は元の `compile.sh` と同じ **`crkbd/rev4_1/standard:gen740`（RP2040）** です。
-薙刀式・Dvorak の実装、生成器、既存の回帰テストを移植しています。
+A Corne keymap extracted from `gen740/qmk_firmware`.
+The build target is **`crkbd/rev4_1/standard:gen740` (RP2040)**, matching the original `compile.sh`.
+This repository contains the Naginata and Dvorak implementations, code generators, and existing regression tests.
 
-## 書き込み
+## Flashing
 
-Nix の `nix-command` と `flakes` を有効にして、このディレクトリで実行します。
-QMK CLI やクロスコンパイラを別途インストールする必要はありません。
+Enable Nix's `nix-command` and `flakes` features, then run the following from this directory.
+Nix provides the QMK CLI and cross compiler; no separate installation is required.
 
 ```sh
 nix run .#flash
 ```
 
-ファームウェアをビルドした後、RP2040 の UF2 ボリュームを待ちます。
-書き込む側を USB 接続し、リセットボタンのダブルタップなどで bootloader に入れてください。
-コピーが終わったら、反対側も USB 接続して同じコマンドを実行します。
-書き込みにはマウント済みのボリュームへの書き込み権限が必要です。
-Linux ではファイルマネージャーなどで `RPI-RP2` をマウントしてください。
+The command builds the firmware and waits for an RP2040 UF2 volume.
+Connect one half over USB and enter the bootloader, for example by double-tapping the reset button.
+Once the copy finishes, connect the other half over USB and run the command again.
+You need write access to the mounted volume.
+On Linux, mount `RPI-RP2` using your file manager or another mounting tool.
 
-複数の RP2040 が接続されている場合や自動検出範囲外にマウントした場合は、明示できます。
+If multiple RP2040 volumes are connected, or the volume is mounted outside the automatic search paths,
+specify its mount point:
 
 ```sh
 nix run .#flash -- --mount /Volumes/RPI-RP2
 ```
 
-自動検出は macOS の `/Volumes`、Linux の `/media`・`/run/media`・`/mnt` を対象にし、
-`INFO_UF2.TXT` の Board-ID が `RPI-RP2` のボリュームへ書き込みます。
-Corne 以外の RP2040 も同じ ID を使うため、書き込むキーボードだけを bootloader に入れてください。
+Automatic detection searches `/Volumes` on macOS and `/media`, `/run/media`, and `/mnt` on Linux.
+It selects volumes whose `INFO_UF2.TXT` contains the Board-ID `RPI-RP2`.
+Other RP2040 boards share this ID, so only put the keyboard you intend to flash into bootloader mode.
 
-## ビルドと編集
+## Building and editing
 
 ```sh
 nix build          # result/crkbd_rev4_1_standard_gen740.uf2
-nix flake check -L # ファームウェアのビルド検証
-nix fmt           # Nix ファイルの整形
+nix flake check -L # Build the firmware and run checks
+nix fmt           # Format Nix files
 ```
 
-編集対象は `keyboards/crkbd/keymaps/gen740/` です。
-`generator/` の定義から、ビルド時に Dvorak・薙刀式の `*_keydata.c/h` を再生成します。
-生成とコンパイルは作業用ディレクトリ内で行われ、手元のファイルは変更しません。
-元の `compile.sh` は Nix のコマンドに置き換えています。
+Edit the files in `keyboards/crkbd/keymaps/gen740/`.
+Each build regenerates the Dvorak and Naginata `*_keydata.c/h` files from the definitions in `generator/`.
+Generation and compilation run in a temporary build directory without modifying your working tree.
+The Nix commands replace the original `compile.sh`.
 
-既存の入力処理の回帰テスト（macOS、Xcode Command Line Tools が必要）:
+Run the existing input-processing regression tests on macOS with Xcode Command Line Tools installed:
 
 ```sh
 python3 keyboards/crkbd/keymaps/gen740/tests/test_naginata.py -v
 ```
 
-## QMK の更新
+## Updating QMK
 
-QMK 本体は公式 `qmk/qmk_firmware` の `master` を Nix input として参照し、
-コミットと submodule を `flake.lock` に固定しています。
-このリポジトリには QMK 本体や他のキーボードをコピーしません。
-Nix は upstream ソースを取得しますが、ビルド用ツリーには core と `crkbd` の定義、
-この keymap だけを配置します。keymap と upstream の履歴を merge する必要はありません。
+QMK is a Nix input tracking the official `qmk/qmk_firmware` repository's `master` branch.
+Its commit and submodules are pinned in `flake.lock`.
+QMK itself and other keyboards are not vendored in this repository.
+Nix fetches the upstream source and constructs a build tree containing the core, the `crkbd` definitions,
+the required layout metadata, and this keymap. There is no need to merge upstream history into the keymap repository.
 
 ```sh
 nix flake update qmk
@@ -63,19 +64,18 @@ git add flake.lock
 git commit -m "Update QMK firmware"
 ```
 
-QMK の破壊的変更でビルドが失敗した場合は keymap を修正してから lock と一緒に commit します。
-更新を取り消すには `git restore flake.lock` を実行してください。
-Nixpkgs なども含めた更新は `nix flake update` です。
-GitHub Actions でも Linux と macOS でビルドし、UF2 を artifact として保存します。
+If a QMK breaking change causes the build to fail, update the keymap and commit the changes with the lock file.
+To discard an uncommitted lock file update, run `git restore flake.lock`.
+Use `nix flake update` to update all inputs, including Nixpkgs.
+GitHub Actions builds the firmware on Linux and macOS and uploads the UF2 files as artifacts.
 
-元の fork にあった RGB の `pixel_rain` 無効化だけを
-`patches/disable-pixel-rain.patch` に分離しています。
-QMK core への変更はありません。
+The original fork's change to disable the `pixel_rain` RGB effect is preserved in
+`patches/disable-pixel-rain.patch`. There are no changes to the QMK core.
 
-## 移植元とライセンス
+## Source and license
 
-- 移植元: [gen740/qmk_firmware](https://github.com/gen740/qmk_firmware/tree/cac04fc46245029e689cde1cb198aad13114ebf5/keyboards/crkbd/keymaps/gen740)
-- 元コミット: `cac04fc46245029e689cde1cb198aad13114ebf5`
+- Source: [gen740/qmk_firmware](https://github.com/gen740/qmk_firmware/tree/cac04fc46245029e689cde1cb198aad13114ebf5/keyboards/crkbd/keymaps/gen740)
+- Source commit: `cac04fc46245029e689cde1cb198aad13114ebf5`
 - QMK: [qmk/qmk_firmware](https://github.com/qmk/qmk_firmware)
-- [External QMK Userspace](https://docs.qmk.fm/newbs_external_userspace) に準じた keymap 配置と `qmk.json` を使用しています。
-- 元のライセンスと各ファイルの著作権表示を維持しています。[LICENSE](LICENSE) を参照してください。
+- The keymap directory structure and `qmk.json` follow the [External QMK Userspace](https://docs.qmk.fm/newbs_external_userspace) conventions.
+- The original license and per-file copyright notices are preserved. See [LICENSE](LICENSE).
