@@ -1,0 +1,45 @@
+#pragma once
+
+#include QMK_KEYBOARD_H
+
+typedef enum naginata_keycodes {
+    NG_A = SAFE_RANGE,
+    NG_B,
+    NG_C,
+    NG_D,
+    NG_E,
+    NG_F,
+    NG_G,
+    NG_H,
+    NG_I,
+    NG_J,
+    NG_K,
+    NG_L,
+    NG_M,
+    NG_N,
+    NG_O,
+    NG_P,
+    NG_Q,
+    NG_R,
+    NG_S,
+    NG_T,
+    NG_U,
+    NG_V,
+    NG_W,
+    NG_X,
+    NG_Y,
+    NG_Z,
+    NG_SLSH,
+    NG_COMM,
+    NG_DOT,
+    NG_SCLN,
+    NG_LSFT1,
+    NG_RSFT1,
+    NG_LSFT2,
+    NG_RSFT2,
+    NG_LSFT3,
+    NG_RSFT3,
+    NG_SAFE_RANGE,
+} NGKEYS;
+
+bool process_naginata(uint16_t, keyrecord_t *);

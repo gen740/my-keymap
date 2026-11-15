@@ -1,0 +1,40 @@
+#pragma once
+
+#define HOLD_ON_OTHER_KEY_PRESS
+#define QUICK_TAP_TERM 0
+#define PERMISSIVE_HOLD
+#define TAPPING_TERM 180
+
+#define MK_3_SPEED
+#define MK_MOMENTARY_ACCEL
+#define MK_C_OFFSET_UNMOD 15
+#define MK_C_INTERVAL_UNMOD 10
+#define MK_C_OFFSET_0 2
+#define MK_C_INTERVAL_0 10
+#define MK_C_OFFSET_1 8
+#define MK_C_INTERVAL_1 10
+#define MK_C_OFFSET_2 15
+#define MK_C_INTERVAL_2 10
+#define MOUSEKEY_MOVE_DELTA 1
+#define MOUSEKEY_MAX_SPEED 15
+#define MOUSEKEY_TIME_TO_MAX 0
+#define MOUSEKEY_INTERVAL 10
+
+// Firmware のサイズ削減用のオプション
+#define LAYER_STATE_8BIT
+#undef LOCKING_SUPPORT_ENABLE
+#undef LOCKING_RESYNC_ENABLE
+
+#define GRAVE_ESC_GUI_OVERRIDE
+#define DEBOUNCE 15
+
+#ifdef RGB_MATRIX_ENABLE
+#    define RGB_MATRIX_KEYPRESSES
+#    define RGB_MATRIX_SLEEP
+#    define RGB_MATRIX_FRAMEBUFFER_EFFECTS
+
+#    define RGB_MATRIX_HUE_STEP 8
+#    define RGB_MATRIX_SAT_STEP 8
+#    define RGB_MATRIX_VAL_STEP 8
+#    define RGB_MATRIX_SPD_STEP 10
+#endif

@@ -1,0 +1,8 @@
+/result
+/result-*
+/.direnv/
+__pycache__/
+*.pyc
+/*.uf2
+/*.bin
+/compile_commands.json

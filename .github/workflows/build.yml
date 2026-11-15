@@ -1,0 +1,23 @@
+name: Build firmware
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - run: nix flake check -L
+      - run: nix build -L
+      - run: nix run .#flash -- --help
+      - uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ matrix.os }}
+          path: result/*.uf2
